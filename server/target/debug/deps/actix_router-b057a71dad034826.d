@@ -1,0 +1,13 @@
+/Users/GK47LX/source/fastfood-simulator/server/target/debug/deps/actix_router-b057a71dad034826.rmeta: /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/lib.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/de.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/path.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/pattern.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/quoter.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/resource.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/resource_path.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/router.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/url.rs
+
+/Users/GK47LX/source/fastfood-simulator/server/target/debug/deps/actix_router-b057a71dad034826.d: /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/lib.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/de.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/path.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/pattern.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/quoter.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/resource.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/resource_path.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/router.rs /Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/url.rs
+
+/Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/lib.rs:
+/Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/de.rs:
+/Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/path.rs:
+/Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/pattern.rs:
+/Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/quoter.rs:
+/Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/resource.rs:
+/Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/resource_path.rs:
+/Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/router.rs:
+/Users/GK47LX/.cargo/registry/src/github.com-1ecc6299db9ec823/actix-router-0.5.1/src/url.rs:

@@ -1,0 +1,3 @@
+cargo:rerun-if-changed=build/main.rs
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=/Users/GK47LX/source/fastfood-simulator/server/target/debug/build/typenum-c2dde5b96e59745f/out/consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=/Users/GK47LX/source/fastfood-simulator/server/target/debug/build/typenum-c2dde5b96e59745f/out/op.rs
