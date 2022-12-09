@@ -9,7 +9,7 @@ export default function Home() {
 	const omeletteRef = useRef();
 	const clientRef = useRef();
 
-	const handleSubmit = (event, param) => {
+	const handleSubmit = (event) => {
 		event.preventDefault();
 
 		const xburgerSelected = xburgerRef.current.checked;
@@ -17,10 +17,24 @@ export default function Home() {
 		const omeletteSelected = omeletteRef.current.checked;
 		const clientName = clientRef.current.value;
 
-		alert(xburgerSelected);
-		alert(hotdogSelected);
-		alert(omeletteSelected);
-		alert(clientName);
+		const reqBody = { 
+			client: clientName,
+			xburger: xburgerSelected,
+			hotdog: hotdogSelected,
+			omelette: omeletteSelected
+		 };
+
+		fetch("http://localhost:8080/order", {
+			method: "POST",
+			body: JSON.stringify(reqBody),
+			headers: {
+				"Content-Type": "application/json",
+			},
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				console.log(data);
+			});
 	};
 
 	return (
