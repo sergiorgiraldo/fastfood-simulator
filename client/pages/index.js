@@ -12,28 +12,27 @@ export default function Home() {
 	const handleSubmit = (event) => {
 		event.preventDefault();
 
+		const clientName = clientRef.current.value;
 		const xburgerSelected = xburgerRef.current.checked;
 		const hotdogSelected = hotdogRef.current.checked;
 		const omeletteSelected = omeletteRef.current.checked;
-		const clientName = clientRef.current.value;
 
-		const reqBody = { 
+		const orderData = { 
 			client: clientName,
 			xburger: xburgerSelected,
 			hotdog: hotdogSelected,
 			omelette: omeletteSelected
 		 };
-
-		fetch("http://localhost:8080/order", {
+		 fetch("/api/order", {
 			method: "POST",
-			body: JSON.stringify(reqBody),
+			body: JSON.stringify(orderData),
 			headers: {
 				"Content-Type": "application/json",
 			},
 		})
-			.then((response) => response.json())
-			.then((data) => {
-				console.log(data);
+		.then((response) => response.json())
+		.then((data) => {
+			console.log(data);
 			});
 	};
 

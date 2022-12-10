@@ -1,16 +1,11 @@
 use actix_web::{get, post, web, App, HttpServer, HttpResponse, Responder, Result};
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Serialize, Deserialize)]
-struct OrderObj {
-    client: String,
-    xburger: bool,
-    hotdog: bool,
-    omelette: bool,
-}
+use crossbeam::channel;
+use std::thread;
+mod model;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+
     HttpServer::new(|| {
         App::new()
             .service(health)
@@ -27,7 +22,10 @@ async fn health() -> Result<impl Responder> {
 }
 
 #[post("/order")]
-async fn order(item: web::Json<OrderObj>) -> HttpResponse {
-    println!("order: {:?}", &item.client);
+async fn order(item: web::Json<model::Order>) -> HttpResponse {
+    println!("order client: {:?}", &item.client);
+    println!("order xburger: {:?}", &item.xburger);
+    println!("order hotdog: {:?}", &item.hotdog);
+    println!("order omelette: {:?}", &item.omelette);
     HttpResponse::Ok().json(item.0)
 }
