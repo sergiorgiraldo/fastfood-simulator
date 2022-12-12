@@ -1,5 +1,8 @@
+use crossbeam::channel::Receiver;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::thread;
+use std::time::Duration;
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Order {
     pub client: String,
@@ -7,6 +10,7 @@ pub struct Order {
     pub hotdog: bool,
     pub omelette: bool,
 }
+#[derive(Clone)]
 pub struct Cook {
     pub name: String,
 }
@@ -18,7 +22,6 @@ pub struct Food {
 
 pub struct Kitchen {
     pub foods: Vec<Food>,
-    pub cooks: Vec<Cook>,
 }
 
 impl Cook {
@@ -28,9 +31,23 @@ impl Cook {
         }
     }
 
-    pub fn start(&self, order: &Order) {
-        println!("Cooking order: {}", order.client);
+    pub fn start(self, orders: Receiver<Order>) {
+        thread::spawn(move ||{
+            println!("{:?}", orders.recv().unwrap());
+        });
+        // for o in orders {
+        //     println!("This is {:?}.Got order from {:?}", self.name, o.client);
+        // }
+        // thread::sleep(Duration::from_secs_f32(0.2));
     }
+
+    // pub fn start(self, mut receiver: tokio::sync::mpsc::Receiver<Order>) {
+    //     tokio::spawn(async move {
+    //         while let Some(msg) = receiver.recv().await {
+    //             println!("This is {:?}.Got order from {:?}", self.name, msg.client);
+    //         }
+    //     });
+    // }
 }
 
 impl Food {

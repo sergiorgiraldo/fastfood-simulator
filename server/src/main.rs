@@ -1,8 +1,15 @@
 use actix_web::{get, post, web::Json, App, HttpResponse, HttpServer, Responder, Result};
+use crossbeam::channel::{self};
 mod model;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    //let (tx, rx) = tokio::sync::mpsc::channel(8);
+    println!("blah1");
+    let (tx_a, rx_a) = channel::unbounded();
+    let rx_a2 = rx_a.clone();
+    println!("blah2");
+
     //menu
     let mut food1 = model::Food::new("xburger");
     food1.add_ingredient("burger", 3);
@@ -16,25 +23,27 @@ async fn main() -> std::io::Result<()> {
     let mut food3 = model::Food::new("omelette");
     food3.add_ingredient("omelette", 2);
     food3.add_ingredient("salad", 2);
+    println!("blah3");
 
     let cook1 = model::Cook::new("John Doe");
+    cook1.start(rx_a);
+    println!("blah4");
+
     let cook2 = model::Cook::new("Jane Doe");
+    cook2.start(rx_a2);
+    println!("blah5");
 
     //kitchen
     let foods = vec![food1, food2, food3];
-    let cooks = vec![cook1, cook2];
     let _kitchen = model::Kitchen {
-        foods: foods,
-        cooks: cooks,
+        foods: foods
     };
 
-    let (tx, rx) = tokio::sync::mpsc::channel(8);
-
-    start_workers(rx);
-
+    //start_workers(rx);
+    println!("blah6");
     HttpServer::new(move || {
         App::new()
-            .app_data(actix_web::web::Data::new(tx.clone()))
+            .app_data(actix_web::web::Data::new(tx_a.clone()))
             .service(health)
             .service(order)
     })
@@ -43,16 +52,17 @@ async fn main() -> std::io::Result<()> {
     .await
 }
 
-fn start_workers(mut receiver: tokio::sync::mpsc::Receiver<model::Order>) {
-    tokio::spawn(async move {
-        while let Some(msg) = receiver.recv().await {
-            println!("Got order from {:?}", msg.client);
-        }
-    });
-}
+// fn start_workers(mut receiver: tokio::sync::mpsc::Receiver<model::Order>) {
+//     tokio::spawn(async move {
+//         while let Some(msg) = receiver.recv().await {
+//             println!("Got order from {:?}", msg.client);
+//         }
+//     });
+// }
 
 #[get("/health")]
 async fn health() -> Result<impl Responder> {
+    println!("blah4");
     Ok("I am alive")
 }
 
