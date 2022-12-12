@@ -1,8 +1,5 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::thread;
-use crossbeam::channel::Receiver;
-#[allow(non_snake_case)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Order {
     pub client: String,
@@ -12,33 +9,27 @@ pub struct Order {
 }
 pub struct Cook {
     pub name: String,
-    pub kitchen: Kitchen
 }
 
-#[derive(Clone)]
-pub struct Food{
+pub struct Food {
     pub name: String,
     pub ingredients: HashMap<String, u8>, //name, time to cook
 }
 
-#[derive(Clone)]
-    pub struct Kitchen {
+pub struct Kitchen {
     pub foods: Vec<Food>,
+    pub cooks: Vec<Cook>,
 }
 
-
 impl Cook {
-    pub fn new(name: &str, kitchen: Kitchen) -> Cook {
+    pub fn new(name: &str) -> Cook {
         Cook {
             name: name.to_string(),
-            kitchen: kitchen
         }
     }
 
-	pub fn start(&self, receiver: &Receiver<Order>) {
-        for order in receiver {
-            println!("Cooking order: {}", order.client);
-        }
+    pub fn start(&self, order: &Order) {
+        println!("Cooking order: {}", order.client);
     }
 }
 
