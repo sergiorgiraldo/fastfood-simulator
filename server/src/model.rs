@@ -1,2 +1,2 @@
-pub use self::main::{Cook, Food, Kitchen, Order};
+pub use self::main::{Cook, Food, Order};
 mod main;

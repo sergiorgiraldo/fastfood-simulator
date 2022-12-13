@@ -4,11 +4,8 @@ mod model;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    //let (tx, rx) = tokio::sync::mpsc::channel(8);
-    println!("blah1");
     let (tx_a, rx_a) = channel::unbounded();
     let rx_a2 = rx_a.clone();
-    println!("blah2");
 
     //menu
     let mut food1 = model::Food::new("xburger");
@@ -23,24 +20,13 @@ async fn main() -> std::io::Result<()> {
     let mut food3 = model::Food::new("omelette");
     food3.add_ingredient("omelette", 2);
     food3.add_ingredient("salad", 2);
-    println!("blah3");
 
-    let cook1 = model::Cook::new("John Doe");
+    let cook1 = model::Cook::new("John Doe", vec![food1.clone(), food2.clone(), food3.clone()]);
     cook1.start(rx_a);
-    println!("blah4");
 
-    let cook2 = model::Cook::new("Jane Doe");
+    let cook2 = model::Cook::new("Jane Doe", vec![food1.clone(), food2.clone(), food3.clone()]);
     cook2.start(rx_a2);
-    println!("blah5");
 
-    //kitchen
-    let foods = vec![food1, food2, food3];
-    let _kitchen = model::Kitchen {
-        foods: foods
-    };
-
-    //start_workers(rx);
-    println!("blah6");
     HttpServer::new(move || {
         App::new()
             .app_data(actix_web::web::Data::new(tx_a.clone()))
@@ -52,24 +38,15 @@ async fn main() -> std::io::Result<()> {
     .await
 }
 
-// fn start_workers(mut receiver: tokio::sync::mpsc::Receiver<model::Order>) {
-//     tokio::spawn(async move {
-//         while let Some(msg) = receiver.recv().await {
-//             println!("Got order from {:?}", msg.client);
-//         }
-//     });
-// }
-
 #[get("/health")]
 async fn health() -> Result<impl Responder> {
-    println!("blah4");
     Ok("I am alive")
 }
 
 #[post("/order")]
 async fn order(
     payload: Json<model::Order>,
-    sender: actix_web::web::Data<tokio::sync::mpsc::Sender<model::Order>>,
+    sender: actix_web::web::Data<crossbeam::channel::Sender<model::Order>>,
 ) -> HttpResponse {
     let order = model::Order {
         client: payload.client.clone(),
@@ -77,6 +54,6 @@ async fn order(
         hotdog: payload.hotdog,
         omelette: payload.omelette,
     };
-    let _ = sender.send(order).await;
+    let _ = sender.send(order);
     HttpResponse::Ok().json("received")
 }
