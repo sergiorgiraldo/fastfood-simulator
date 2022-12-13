@@ -21,7 +21,7 @@ pub struct Food {
 }
 
 impl Cook {
-    pub fn new<'a>(name: &str, foods: Vec<Food>) -> Cook {
+    pub fn new(name: &str, foods: Vec<Food>) -> Cook {
         Cook {
             name: name.to_string(),
             foods: foods
@@ -47,7 +47,7 @@ impl Cook {
                         break;
                     }
                 }    
-                println!("I am {:?} doing {:?}", self.name, orders.recv().unwrap().client);
+                println!("I am {:?} doing {:?}", self.name, order.client);
                 for  (k, v) in ingredients.iter() {
                     println!("cooking {}", k);
                     thread::sleep(Duration::from_secs(*v));
