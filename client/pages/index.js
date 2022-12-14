@@ -18,6 +18,7 @@ export default function Home() {
 		const omeletteSelected = omeletteRef.current.checked;
 
 		const orderData = { 
+			id: "",
 			client: clientName,
 			xburger: xburgerSelected,
 			hotdog: hotdogSelected,

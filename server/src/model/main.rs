@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::{thread, time::Duration};
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Order {
+    pub id: String,
     pub client: String,
     pub xburger: bool,
     pub hotdog: bool,
@@ -47,11 +48,12 @@ impl Cook {
                         break;
                     }
                 }    
-                println!("I am {:?} doing {:?}", self.name, order.client);
+                println!("I am {:?} doing {:?} from {}", self.name, order.id, order.client);
                 for  (k, v) in ingredients.iter() {
-                    println!("cooking {}", k);
+                    println!("{}::{} -> cooking {}", self.name, order.id, k);
                     thread::sleep(Duration::from_secs(*v));
                 }    
+                println!("{} DONE", order.id);
             }
         });
     }

@@ -1,5 +1,7 @@
 use actix_web::{get, post, web::Json, App, HttpResponse, HttpServer, Responder, Result};
 use crossbeam::channel::{self};
+use uuid::Uuid;
+
 mod model;
 
 #[actix_web::main]
@@ -48,12 +50,15 @@ async fn order(
     payload: Json<model::Order>,
     sender: actix_web::web::Data<crossbeam::channel::Sender<model::Order>>,
 ) -> HttpResponse {
+    let id = Uuid::new_v4().to_string();
+
     let order = model::Order {
+        id: id.clone(),
         client: payload.client.clone(),
         xburger: payload.xburger,
         hotdog: payload.hotdog,
         omelette: payload.omelette,
     };
     let _ = sender.send(order);
-    HttpResponse::Ok().json("received")
+    HttpResponse::Ok().json(id)
 }
