@@ -6,7 +6,7 @@ export async function insertOrder(order) {
 	};
 
 	const response = await fetch(
-		"http://localhost:8080/order",
+		"http://localhost:8000/order",
 		requestOptions
 	);
 	const data = await response.json();

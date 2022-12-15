@@ -25,49 +25,49 @@ impl Cook {
     pub fn new(name: &str, foods: Vec<Food>) -> Cook {
         Cook {
             name: name.to_string(),
-            foods: foods
+            foods: foods,
         }
     }
 
     pub fn start(self, orders: Receiver<Order>) {
-        thread::spawn(move ||{
-            loop{
-                let order = orders.recv().unwrap();
-                let mut ingredients = &HashMap::new();
-                for f in &self.foods {
-                    if order.xburger && f.name == "xburger" {
-                        ingredients = &f.ingredients;
-                        break;
-                    }
-                    if order.hotdog && f.name == "hotdog" {
-                        ingredients = &f.ingredients;
-                        break;
-                    }
-                    if order.omelette && f.name == "omelette" {
-                        ingredients = &f.ingredients;
-                        break;
-                    }
-                }    
-                
-                Self::post_msg(format!("I am {:?} doing {:?} from {}", self.name, order.id, order.client));
-
-                for  (k, v) in ingredients.iter() {
-                    Self::post_msg(format!("{}::{} -> cooking {}", self.name, order.id, k));
-                    thread::sleep(Duration::from_secs(*v));
-                }    
-                Self::post_msg(format!("{} DONE", order.id));
+        thread::spawn(move || loop {
+            let order = orders.recv().unwrap();
+            let mut ingredients = &HashMap::new();
+            for f in &self.foods {
+                if order.xburger && f.name == "xburger" {
+                    ingredients = &f.ingredients;
+                    break;
+                }
+                if order.hotdog && f.name == "hotdog" {
+                    ingredients = &f.ingredients;
+                    break;
+                }
+                if order.omelette && f.name == "omelette" {
+                    ingredients = &f.ingredients;
+                    break;
+                }
             }
+
+            Self::post_msg(format!(
+                "I am {:?} doing {:?} from {}",
+                self.name, order.id, order.client
+            ));
+
+            for (k, v) in ingredients.iter() {
+                Self::post_msg(format!("{}::{} -> cooking {}", self.name, order.id, k));
+                thread::sleep(Duration::from_secs(*v));
+            }
+            Self::post_msg(format!("{} DONE", order.id));
         });
     }
 
-    fn post_msg(msg: String){
+    fn post_msg(msg: String) {
         println!("{}", msg);
-        let _ = ureq::post("http://localhost:8000/publish")
-        .send_json(ureq::json!({
+        let _ = ureq::post("http://localhost:8000/publish").send_json(ureq::json!({
             "user_id": 1,
             "topic": "order",
             "message": msg
-        }));    
+        }));
     }
 }
 

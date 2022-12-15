@@ -1,13 +1,13 @@
+use crossbeam::channel::{self};
 use std::collections::HashMap;
 use std::convert::Infallible;
 use std::sync::Arc;
 use tokio::sync::{mpsc, RwLock};
 use warp::{ws::Message, Filter, Rejection};
-use crossbeam::channel::{self};
 
 mod handler;
-mod ws;
 mod model;
+mod ws;
 
 type Result<T> = std::result::Result<T, Rejection>;
 type Clients = Arc<RwLock<HashMap<String, Client>>>;
@@ -39,11 +39,17 @@ async fn main() {
     food3.add_ingredient("omelette", 2);
     food3.add_ingredient("salad", 2);
 
-    let cook1 = model::Cook::new("John Doe", vec![food1.clone(), food2.clone(), food3.clone()]);
+    let cook1 = model::Cook::new(
+        "John Doe",
+        vec![food1.clone(), food2.clone(), food3.clone()],
+    );
     cook1.start(rx_a);
 
-    let cook2 = model::Cook::new("Jane Doe", vec![food1.clone(), food2.clone(), food3.clone()]);
-    cook2.start(rx_a2);    
+    let cook2 = model::Cook::new(
+        "Jane Doe",
+        vec![food1.clone(), food2.clone(), food3.clone()],
+    );
+    cook2.start(rx_a2);
 
     //socket and api
     let clients: Clients = Arc::new(RwLock::new(HashMap::new()));
@@ -61,12 +67,12 @@ async fn main() {
             .and(warp::path::param())
             .and(with_clients(clients.clone()))
             .and_then(handler::unregister_handler));
-    
+
     let order_route = warp::path!("order")
-    .and(warp::post())
-    .and(warp::body::json())
-    .and(with_data(tx_a.clone()))
-    .and_then(handler::order_handler);
+        .and(warp::post())
+        .and(warp::body::json())
+        .and(with_data(tx_a.clone()))
+        .and_then(handler::order_handler);
 
     let publish = warp::path!("publish")
         .and(warp::body::json())
@@ -93,6 +99,9 @@ fn with_clients(clients: Clients) -> impl Filter<Extract = (Clients,), Error = I
     warp::any().map(move || clients.clone())
 }
 
-fn with_data(tx: crossbeam::channel::Sender<model::Order>) -> impl Filter<Extract = (crossbeam::channel::Sender<model::Order>,), Error = Infallible> + Clone {
+fn with_data(
+    tx: crossbeam::channel::Sender<model::Order>,
+) -> impl Filter<Extract = (crossbeam::channel::Sender<model::Order>,), Error = Infallible> + Clone
+{
     warp::any().map(move || tx.clone())
 }

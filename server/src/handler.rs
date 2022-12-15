@@ -1,4 +1,4 @@
-use crate::{ws, model::{Order}, Client, Clients, Result};
+use crate::{model::Order, ws, Client, Clients, Result};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::{http::StatusCode, reply::json, ws::Message, Reply};
@@ -76,9 +76,11 @@ pub async fn health_handler() -> Result<impl Reply> {
     Ok(json(&"I AM ALIVE"))
 }
 
-pub async fn order_handler(o: Order,
-    sender: crossbeam::channel::Sender<Order>)-> Result<impl Reply>{
-    let id =  Uuid::new_v4().as_simple().to_string();
+pub async fn order_handler(
+    o: Order,
+    sender: crossbeam::channel::Sender<Order>,
+) -> Result<impl Reply> {
+    let id = Uuid::new_v4().as_simple().to_string();
     let mut order = o.clone();
     order.id = id.clone();
     println!("{:?}", order);
