@@ -3,7 +3,9 @@ import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { useRef } from "react";
 import { useEffect, useState } from "react";
-import io from "Socket.IO-client";
+// import io from "Socket.IO-client";
+import { w3cwebsocket as W3CWebSocket } from "websocket";
+
 let socket;
 
 export default function Home() {
@@ -12,29 +14,33 @@ export default function Home() {
 	const omeletteRef = useRef();
 	const clientRef = useRef();
 
+	const [wss, setWss] = useState();
+	const [wsSession, setWssSession] = useState("");
+	const [orderMsg, setOrderMsg] = useState("");
+
 	useEffect(() => {
-		socketInitializer()
+		socketInitializer();
 	}, []);
-	
-	const [input, setInput] = useState("");
 
-	const socketInitializer = async () => {
-		await fetch("/api/socket");
-		socket = io();
+	// const [input, setInput] = useState("");
 
-		socket.on("connect", () => {
-			console.log("connected");
-		});
+	// const socketInitializer = async () => {
+	// 	await fetch("/api/socket");
+	// 	socket = io();
 
-		socket.on("update-input", (msg) => {
-			setInput(msg);
-		});
-	};
+	// 	socket.on("connect", () => {
+	// 		console.log("connected");
+	// 	});
 
-	const onChangeHandler = (event) => {
-		setInput(event.target.value);
-		socket.emit("input-change", event.target.value);
-	};
+	// 	socket.on("update-input", (msg) => {
+	// 		setInput(msg);
+	// 	});
+	// };
+
+	// const onChangeHandler = (event) => {
+	// 	setInput(event.target.value);
+	// 	socket.emit("input-change", event.target.value);
+	// };
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
@@ -64,6 +70,58 @@ export default function Home() {
 			});
 	};
 
+	const currentWsSession = (ws_session) => {
+		setWssSession(ws_session);
+		tracking(ws_session);
+	};
+
+	const tracking = (ws_session) => {
+		let socket = new W3CWebSocket(ws_session);
+
+		setWss(socket);
+
+		socket.addEventListener("open", () => {
+			console.log("[websockets] Connected");
+		});
+
+		socket.addEventListener("message", (event) => {
+			if (event?.data) {
+				setTimeout(
+					() => setOrderMsg(event.data),
+					5000
+				);
+			}
+		});
+
+		socket.addEventListener("close", () => {
+			console.log("[websockets] closed");
+			setOrderMsg("");
+		});
+	};
+
+	const socketInitializer = () => {
+		const post_data = {
+			user_id: 1
+		};
+
+		const callRegister = async () => {
+			try {
+				const res = await fetch(
+					"/api/register",
+					{
+						method: 'POST',
+						body: JSON.stringify(post_data)
+					}
+				);
+				const data = await res.json();
+				currentWsSession(data.url);
+			} catch (err) {
+				console.log(err);
+			}
+		};
+		callRegister();		
+	};
+
 	return (
 		<div className={styles.container}>
 			<Head>
@@ -75,11 +133,6 @@ export default function Home() {
 			<main className={styles.main}>
 				<h1 className={styles.title}>Fastfood simulator</h1>
 
-				<input
-					placeholder="Type something"
-					value={input}
-					onChange={onChangeHandler}
-				/>
 				<div className={styles.grid}>
 					<h2>Order here</h2>
 					<form>
@@ -120,48 +173,16 @@ export default function Home() {
 						</p>
 					</form>
 
-					<h2>Orders list</h2>
-					<p className={styles.card}>
-						Asset csystems BATF Blowpipe Soviet South Africa wire
-						transfer. NSA event security Compsec spies benelux Sears
-						Tower airframe red noise. Commecen Steve <br />
-						Asset csystems BATF Blowpipe Soviet South Africa wire
-						transfer. NSA event security Compsec spies benelux Sears
-						Tower airframe red noise. Commecen Steve <br />
-						Asset csystems BATF Blowpipe Soviet South Africa wire
-						transfer. NSA event security Compsec spies benelux Sears
-						Tower airframe red noise. Commecen Steve
-					</p>
-				</div>
-				<div className={styles.grid}>
 					<h2>Kitchen</h2>
 					<p className={styles.card}>
-						I went to the woods because I wished to live
-						deliberately, to front only the essential facts of life,
-						and see if I could not learn what it had to teach, and{" "}
-						<br />
-						I went to the woods because I wished to live
-						deliberately, to front only the essential facts of life,
-						and see if I could not learn what it had to teach, and{" "}
-						<br />I went to the woods because I wished to live
-						deliberately, to front only the essential facts of life,
-						and see if I could not learn what it had to teach, and
-					</p>
-
-					<h2>Ready to pickup</h2>
-					<p className={styles.card}>
-						I went to the woods because I wished to live
-						deliberately, to front only the essential facts of life,
-						and see if I could not learn what it had to teach, and{" "}
-						<br />
-						I went to the woods because I wished to live
-						deliberately, to front only the essential facts of life,
-						and see if I could not learn what it had to teach, and{" "}
-						<br />I went to the woods because I wished to live
-						deliberately, to front only the essential facts of life,
-						and see if I could not learn what it had to teach, and
+						{orderMsg}
 					</p>
 				</div>
+				{/* <input
+					placeholder="Type something - websocket demo"
+					value={input}
+					onChange={onChangeHandler}
+				/> */}
 			</main>
 
 			<footer className={styles.footer}>
