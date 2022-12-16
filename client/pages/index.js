@@ -1,12 +1,8 @@
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { useRef } from "react";
-import { useEffect, useState } from "react";
-// import io from "Socket.IO-client";
+import { useEffect, useState, useRef } from "react";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
-
-let socket;
 
 export default function Home() {
 	const xburgerRef = useRef();
@@ -14,33 +10,15 @@ export default function Home() {
 	const omeletteRef = useRef();
 	const clientRef = useRef();
 
-	const [wss, setWss] = useState();
-	const [wsSession, setWssSession] = useState("");
 	const [orderMsg, setOrderMsg] = useState("");
-
+	
+	const effectRan = useRef(false);
 	useEffect(() => {
-		socketInitializer();
+		if (!effectRan.current) {
+			initializeSocket();
+		}
+		return () => {effectRan.current = true};
 	}, []);
-
-	// const [input, setInput] = useState("");
-
-	// const socketInitializer = async () => {
-	// 	await fetch("/api/socket");
-	// 	socket = io();
-
-	// 	socket.on("connect", () => {
-	// 		console.log("connected");
-	// 	});
-
-	// 	socket.on("update-input", (msg) => {
-	// 		setInput(msg);
-	// 	});
-	// };
-
-	// const onChangeHandler = (event) => {
-	// 	setInput(event.target.value);
-	// 	socket.emit("input-change", event.target.value);
-	// };
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
@@ -66,19 +44,12 @@ export default function Home() {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				console.log(data);
+				console.log("order:" + data.response);
 			});
 	};
 
-	const currentWsSession = (ws_session) => {
-		setWssSession(ws_session);
-		tracking(ws_session);
-	};
-
-	const tracking = (ws_session) => {
+	const trackUpdates = (ws_session) => {
 		let socket = new W3CWebSocket(ws_session);
-
-		setWss(socket);
 
 		socket.addEventListener("open", () => {
 			console.log("[websockets] Connected");
@@ -86,10 +57,7 @@ export default function Home() {
 
 		socket.addEventListener("message", (event) => {
 			if (event?.data) {
-				setTimeout(
-					() => setOrderMsg(event.data),
-					5000
-				);
+				setTimeout(() => setOrderMsg(event.data), 1000);
 			}
 		});
 
@@ -99,27 +67,21 @@ export default function Home() {
 		});
 	};
 
-	const socketInitializer = () => {
+	const initializeSocket = async () => {
 		const post_data = {
 			user_id: 1
 		};
-
-		const callRegister = async () => {
-			try {
-				const res = await fetch(
-					"/api/register",
-					{
-						method: 'POST',
-						body: JSON.stringify(post_data)
-					}
-				);
-				const data = await res.json();
-				currentWsSession(data.url);
-			} catch (err) {
-				console.log(err);
-			}
-		};
-		callRegister();		
+		console.log("Initializing");
+		try {
+			const res = await fetch("/api/register", {
+				method: "POST",
+				body: JSON.stringify(post_data)
+			});
+			const data = await res.json();
+			trackUpdates(data.url);
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
 	return (
@@ -174,9 +136,7 @@ export default function Home() {
 					</form>
 
 					<h2>Kitchen</h2>
-					<p className={styles.card}>
-						{orderMsg}
-					</p>
+					<p className={styles.card}>{orderMsg}</p>
 				</div>
 				{/* <input
 					placeholder="Type something - websocket demo"
